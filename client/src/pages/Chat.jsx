@@ -1,17 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
 import UserBox from "../components/common/UserBox";
+import ChatTabs from "../components/common/tabs/ChatTabs";
+import UserTabs from "../components/common/tabs/UserTabs";
 
 const Chat = () => {
+  const [tabs, setTabs] = useState("chat");
+  const ActiveTabs = (param) => {
+    setTabs(param);
+  };
   return (
     <div className="h-screen flex">
-      <div className="w-96 h-screen border-2 p-5">
-        <span className="text-xl font-bold ">Chat</span>
-        <div className="section-list-user">
-          {Array.from({ length: 10 }).map((_, index) => (
-            <UserBox key={index} />
-          ))}
+      <div className="w-96 h-screen border-2 p-5 relative">
+        <p className="text-xl font-bold text-center mb-2">Chat</p>
+        <div className="flex justify-evenly">
+          <button
+            onClick={() => ActiveTabs("chat")}
+            className={`w-full  ${
+              tabs == "chat" ? "font-semibold border-b-2" : ""
+            }`}
+          >
+            Chats
+          </button>
+          <button
+            onClick={() => ActiveTabs("contact")}
+            className={`w-full  ${
+              tabs == "contact" ? "font-semibold border-b-2" : ""
+            }`}
+          >
+            Contacts
+          </button>
         </div>
-        <button className="bg-blue-400 p-2 w-full text-white rounded-md">
+        <div className="">{tabs == "chat" ? <ChatTabs /> : <UserTabs />}</div>
+
+        <button className="bg-blue-400 p-2 text-white rounded-md absolute bottom-4 ">
           Logout
         </button>
       </div>

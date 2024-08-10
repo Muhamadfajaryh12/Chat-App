@@ -3,6 +3,10 @@ const app = express();
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
+const dotenv = require("dotenv");
+
+dotenv.config();
+
 const bodyParser = require("body-parser");
 const user = require("./api/users/routes");
 app.use(cors());

@@ -1,6 +1,11 @@
 const UserService = require("./service");
 const InvariantError = require("../../exceptions/InvariantError");
+const jwt = require("jsonwebtoken");
 const userService = new UserService();
+
+const generateAccesToken = (username) => {
+  return jwt.sign(username, process.env.TOKEN_SECRET);
+};
 
 const register = async (req, res) => {
   const { username, password } = req.body;
@@ -21,10 +26,11 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { username, password } = req.body;
   try {
-    const response = await userService.login({ username, password });
+    await userService.login({ username, password });
+    const token = generateAccesToken(username);
     res.status(200).json({
       message: "Login Successfully",
-      response,
+      token: token,
     });
   } catch (error) {
     if (error instanceof InvariantError) {
