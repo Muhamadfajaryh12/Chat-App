@@ -40,7 +40,7 @@ const ModalContact = () => {
   return (
     <ChakraProvider>
       <Button onClick={onOpen} className="w-full" colorScheme="green">
-        Open Modal
+        Add Contact
       </Button>
 
       <Modal
