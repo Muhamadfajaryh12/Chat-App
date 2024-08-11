@@ -13,12 +13,13 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 const user = require("./api/users/routes");
-const contact = require("./api/contacs/routes");
+const contact = require("./api/contacts/routes");
+const chat = require("./api/chats/routes");
 const server = http.createServer(app);
 
 app.use("/api/users", user);
 app.use("/api/contact", contact);
-
+app.use("/api/chat", chat);
 server.listen(3001, () => {
   console.log("Server Running ");
 });

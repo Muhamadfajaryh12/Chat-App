@@ -1,13 +1,17 @@
-const ContactService = require("./service");
+const ChatService = require("./service");
 const InvariantError = require("../../exceptions/InvariantError");
-const contactService = new ContactService();
+const chatService = new ChatService();
 
-const addContact = async (req, res) => {
-  const { id_user_1, id_user_2 } = req.body;
+const sendChat = async (req, res) => {
+  const { receiver_id, sender_id, chat_text } = req.body;
   try {
-    const response = await contactService.addContact({ id_user_1, id_user_2 });
+    const response = await chatService.sendChat({
+      receiver_id,
+      sender_id,
+      chat_text,
+    });
     res.status(201).json({
-      message: "Added Successfully",
+      message: "Send Successfully",
       response,
     });
   } catch (error) {
@@ -18,11 +22,12 @@ const addContact = async (req, res) => {
   }
 };
 
-const getContact = async (req, res) => {
+const getChat = async (req, res) => {
   const { id } = req.params;
   try {
-    const response = await contactService.getContact({ id });
+    const response = await chatService.getChat({ id });
     res.status(200).json({
+      message: "List Chat",
       response,
     });
   } catch (error) {
@@ -32,8 +37,7 @@ const getContact = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 module.exports = {
-  addContact,
-  getContact,
+  sendChat,
+  getChat,
 };
