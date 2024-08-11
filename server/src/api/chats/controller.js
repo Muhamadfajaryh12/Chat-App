@@ -25,10 +25,10 @@ const sendChat = async (req, res) => {
 const getChat = async (req, res) => {
   const { id } = req.params;
   try {
-    const response = await chatService.getChat({ id });
+    const data = await chatService.getChat({ id });
     res.status(200).json({
       message: "List Chat",
-      response,
+      data,
     });
   } catch (error) {
     if (error instanceof InvariantError) {

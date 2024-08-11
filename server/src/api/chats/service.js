@@ -25,13 +25,21 @@ class ChatService {
   }
 
   async getChat({ id }) {
-    const query = "SELECT * FROM chat WHERE sender_id = ? OR receiver_id = ?";
+    const query = `SELECT
+    chat.id as chat_id, 
+    users.id as user_id, 
+    users.username
+    FROM chat
+    JOIN users ON users.id = chat.receiver_id OR users.id = chat.sender_id
+    WHERE chat.sender_id = ? OR chat.receiver_id = ?
+    GROUP BY users.id`;
     const [result] = await pool.query(query, [id, id]);
 
-    if (result.affectedRows == 0) {
+    if (result.length == 0) {
       throw new InvariantError("Chat not found");
     }
-    return result;
+    const filter = result.filter((item) => item.user_id != id);
+    return filter;
   }
 }
 module.exports = ChatService;
