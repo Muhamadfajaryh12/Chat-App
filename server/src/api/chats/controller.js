@@ -37,7 +37,25 @@ const getChat = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+const getDetailChat = async (req, res) => {
+  const { id_1, id_2 } = req.params;
+  console.log(id_1, id_2);
+  try {
+    const data = await chatService.getDetailChat(id_1, id_2);
+    res.status(200).json({
+      message: "List Chat",
+      data,
+    });
+  } catch (error) {
+    if (error instanceof InvariantError) {
+      return res.status(400).json({ message: error.message });
+    }
+    res.status(500).json({ message: error.message });
+  }
+};
 module.exports = {
   sendChat,
   getChat,
+  getDetailChat,
 };
