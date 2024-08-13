@@ -15,7 +15,12 @@ const ChatTabs = ({ setContent }) => {
     <div className="mt-2">
       <div className="section-list-user">
         {data?.data?.map((item) => (
-          <UserBox key={item.id} nama={item.username} setContent={setContent} />
+          <UserBox
+            key={item.user_id}
+            nama={item.username}
+            id={item.user_id}
+            setContent={setContent}
+          />
         ))}
       </div>
     </div>

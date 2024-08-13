@@ -18,7 +18,12 @@ const UserTabs = ({ setContent }) => {
       <ModalContact />
       <div className="section-list-user">
         {data?.data?.map((item) => (
-          <UserBox key={item.id} nama={item.username} setContent={setContent} />
+          <UserBox
+            key={item.user_id}
+            id={item.user_id}
+            nama={item.username}
+            setContent={setContent}
+          />
         ))}
       </div>
     </div>

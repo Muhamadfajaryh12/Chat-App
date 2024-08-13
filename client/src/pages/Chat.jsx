@@ -1,16 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UserBox from "../components/common/UserBox";
 import ChatTabs from "../components/common/tabs/ChatTabs";
 import UserTabs from "../components/common/tabs/UserTabs";
 import { IoMdSend } from "react-icons/io";
 import ChatBox from "../components/common/ChatBox";
 import Banner from "../components/common/Banner";
+import { ChatAPI } from "../api/Chat";
 const Chat = () => {
   const [tabs, setTabs] = useState("chat");
   const [content, setContent] = useState(null);
+  const [chat, setChat] = useState([]);
+
   const ActiveTabs = (param) => {
     setTabs(param);
   };
+  const getData = async (content) => {
+    setContent(content);
+    const response = await ChatAPI.getChat(content);
+    setChat(response.data);
+    console.log(response);
+    console.log(chat);
+  };
+  console.log(chat);
   return (
     <div className="h-screen flex">
       <div className="w-96 h-screen border-2 p-5 relative">
@@ -35,9 +46,9 @@ const Chat = () => {
         </div>
         <div className="">
           {tabs == "chat" ? (
-            <ChatTabs setContent={setContent} />
+            <ChatTabs setContent={getData} />
           ) : (
-            <UserTabs setContent={setContent} />
+            <UserTabs setContent={getData} />
           )}
         </div>
 
@@ -50,14 +61,14 @@ const Chat = () => {
         {!content ? (
           <Banner />
         ) : (
-          <div className="">
+          <div className="h-screen">
             <div className="w-auto h-10 border-2 p-2">
               <span>Nama</span>
             </div>
-            <div className="relative h-screen">
-              <ChatBox position={"sender"} />
-              <ChatBox position={"receiver"} />
-              <ChatBox position={"receiver"} /> <ChatBox position={"sender"} />
+            <div className="relative h-3/4 overflow-auto">
+              {chat?.map((item) => (
+                <ChatBox key={item.chat_id} item={item} />
+              ))}
             </div>
             <div className="flex gap-2 p-2">
               <input type="text" className="border-2 w-full rounded-sm " />

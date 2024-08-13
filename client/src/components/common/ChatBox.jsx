@@ -1,18 +1,24 @@
 import React from "react";
 
-const ChatBox = ({ position }) => {
+const ChatBox = ({ position, item }) => {
   return (
     <div
       className={`flex ${
-        position == "receiver" ? "justify-start " : "justify-end "
+        item.sender_id == 7 ? "justify-end " : "justify-start "
       } `}
     >
       <p
         className={` ${
-          position == "receiver" ? " bg-blue-200" : " bg-green-200"
+          item.sender_id == 7 ? " bg-green-200" : " bg-blue-200"
         } p-2 m-2`}
       >
-        ChatBox
+        {item.chat_text}
+        <p className="" style={{ fontSize: "10px" }}>
+          {new Date(item.chat_date).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </p>
       </p>
     </div>
   );

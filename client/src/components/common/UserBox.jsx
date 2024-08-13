@@ -1,10 +1,10 @@
 import React from "react";
 
-const UserBox = ({ nama, setContent }) => {
+const UserBox = ({ id, nama, setContent }) => {
   return (
     <div
       className="border-2 my-2 p-2 rounded-md"
-      onClick={() => setContent(nama)}
+      onClick={() => setContent(id)}
     >
       <img src="" alt="" />
       <p>{nama}</p>
