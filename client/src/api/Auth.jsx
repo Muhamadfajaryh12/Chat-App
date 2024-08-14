@@ -27,6 +27,7 @@ const AuthAPI = (() => {
         username,
         password,
       });
+
       return response.data;
     } catch (error) {
       console.log(error);

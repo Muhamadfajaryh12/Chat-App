@@ -15,18 +15,43 @@ const io = new Server(server, {
   },
 });
 
+let onlineUsers = [];
 io.on("connection", (socket) => {
   console.log(`A user connected: ${socket.id}`);
 
-  socket.on("sendMessage", (data) => {
-    console.log("Message received:", data);
+  socket.on("sendMessage", (message) => {
+    const user = onlineUsers.find((user) => user.userId == message.receiver_id);
+    console.log("Sending message to:", user);
+    if (user) {
+      io.to(user.socketId).emit("getMessage", message);
+    } else {
+      console.log("User not found or not online");
+    }
 
-    io.emit("message", data);
+    const sender = onlineUsers.find((user) => user.userId == message.sender_id);
+    if (sender) {
+      io.to(sender.socketId).emit("getMessage", message);
+      console.log("Message sent to sender:", message);
+    } else {
+      console.log("Sender not found or not online");
+    }
+  });
+
+  socket.on("onlineUser", (userId) => {
+    !onlineUsers.some((user) => user.userId === userId) &&
+      onlineUsers.push({
+        userId,
+        socketId: socket.id,
+      });
+    io.emit("getOnlineUsers", onlineUsers);
   });
 
   socket.on("disconnect", () => {
+    onlineUsers = onlineUsers.filter((user) => user.userId !== socket.id);
+    io.emit("getOnlineUsers", onlineUsers);
     console.log("User disconnected");
   });
+  console.log(onlineUsers);
 });
 
 const PORT = 3000;

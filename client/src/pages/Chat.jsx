@@ -7,13 +7,16 @@ import ChatBox from "../components/common/ChatBox";
 import Banner from "../components/common/Banner";
 import { ChatAPI } from "../api/Chat";
 import { io } from "socket.io-client";
+import { useForm } from "react-hook-form";
 
 const Chat = () => {
   const [tabs, setTabs] = useState("chat");
   const [content, setContent] = useState(null);
   const [chat, setChat] = useState([]);
-  const [message, setMessage] = useState("");
   const [name, setName] = useState("");
+  const [socket, setSocket] = useState(null);
+  const [online, setOnline] = useState([]);
+  const { register, handleSubmit } = useForm();
   const ActiveTabs = (param) => {
     setTabs(param);
   };
@@ -23,37 +26,55 @@ const Chat = () => {
     setChat(response.data.result);
     setName(response.data.userResult.username);
   };
-  const socket = io("http://localhost:3000");
+
   useEffect(() => {
-    if (content) {
-      socket.on("connect", () => {
-        console.log("Socket connected");
+    const socketClient = io("http://localhost:3000");
+    setSocket(socketClient);
+
+    socketClient.on("connect", () => {
+      socketClient.emit("onlineUser", localStorage.getItem("id"));
+    });
+
+    socketClient.on("getOnlineUsers", (res) => {
+      setOnline(res);
+    });
+
+    socketClient.on("getMessage", (newMessage) => {
+      console.log("New message received:", newMessage); // Add this line for debugging
+      setChat((prevChat) => [...prevChat, newMessage]);
+      console.log(chat);
+    });
+    return () => {
+      socketClient.off("getOnlineUsers");
+      socketClient.off("getMessage");
+      socketClient.disconnect();
+    };
+  }, []);
+
+  const onSubmit = async (data) => {
+    const { chat_text, sender_id, receiver_id } = data;
+
+    if (socket) {
+      console.log("Sending message:", {
+        sender_id: data.sender_id,
+        receiver_id: data.receiver_id,
+        chat_text: data.chat_text,
+        chat_date: new Date(),
       });
-
-      socket.on("message", (newMessage) => {
-        setChat((prevChat) => [...prevChat, newMessage]);
-      });
-
-      socket.on("disconnect", () => {
-        console.log("Socket disconnected");
-      });
-
-      return () => {
-        socket.off("message");
-        socket.disconnect();
-      };
-    }
-  }, [content]);
-
-  const sendMessage = () => {
-    if (message.trim()) {
-      const socket = io("http://localhost:3000");
       socket.emit("sendMessage", {
-        content: message,
-        chat_id: content,
+        sender_id: data.sender_id,
+        receiver_id: data.receiver_id,
+        chat_text: data.chat_text,
+        chat_date: new Date(),
       });
-      setMessage("");
+    } else {
+      console.error("Socket is not initialized");
     }
+    await ChatAPI.sendChat({
+      receiver_id,
+      sender_id,
+      chat_text,
+    });
   };
   return (
     <div className="h-screen flex">
@@ -79,9 +100,9 @@ const Chat = () => {
         </div>
         <div className="">
           {tabs == "chat" ? (
-            <ChatTabs setContent={getData} />
+            <ChatTabs setContent={getData} dataOnline={online} />
           ) : (
-            <UserTabs setContent={getData} />
+            <UserTabs setContent={getData} dataOnline={online} />
           )}
         </div>
 
@@ -103,12 +124,31 @@ const Chat = () => {
                 <ChatBox key={item.chat_id} item={item} />
               ))}
             </div>
-            <div className="flex gap-2 p-2">
-              <input type="text" className="border-2 w-full rounded-sm " />
-              <button className="bg-green-600 p-2 text-white rounded-sm">
-                <IoMdSend></IoMdSend>
-              </button>
-            </div>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="flex gap-2 p-2">
+                <input
+                  type="text"
+                  className="border-2 w-full rounded-sm "
+                  {...register("chat_text")}
+                />
+                <input
+                  type="hidden"
+                  value={localStorage.getItem("id")}
+                  {...register("sender_id")}
+                />
+                <input
+                  type="hidden"
+                  value={content}
+                  {...register("receiver_id")}
+                />
+                <button
+                  className="bg-green-600 p-2 text-white rounded-sm"
+                  type="submit"
+                >
+                  <IoMdSend></IoMdSend>
+                </button>
+              </div>
+            </form>
           </div>
         )}
       </div>

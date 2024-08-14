@@ -29,7 +29,7 @@ class UserService {
       }
 
       return {
-        username: user.username,
+        id: user.id,
       };
     } catch (error) {
       console.error(error);

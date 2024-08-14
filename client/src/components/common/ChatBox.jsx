@@ -4,12 +4,16 @@ const ChatBox = ({ position, item }) => {
   return (
     <div
       className={`flex ${
-        item.sender_id == 7 ? "justify-end " : "justify-start "
+        item.sender_id == localStorage.getItem("id")
+          ? "justify-end "
+          : "justify-start "
       } `}
     >
       <p
         className={` ${
-          item.sender_id == 7 ? " bg-green-200" : " bg-blue-200"
+          item.sender_id == localStorage.getItem("id")
+            ? " bg-green-200"
+            : " bg-blue-200"
         } p-2 m-2`}
       >
         {item.chat_text}

@@ -26,11 +26,12 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { username, password } = req.body;
   try {
-    await userService.login({ username, password });
+    const data = await userService.login({ username, password });
     const token = generateAccesToken(username);
     res.status(200).json({
       message: "Login Successfully",
       token: token,
+      data,
     });
   } catch (error) {
     if (error instanceof InvariantError) {

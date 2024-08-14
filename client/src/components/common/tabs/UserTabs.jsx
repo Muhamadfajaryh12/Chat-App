@@ -3,7 +3,7 @@ import UserBox from "../UserBox";
 import ModalContact from "../ModalContact";
 import { ContactAPI } from "../../../api/Contact";
 
-const UserTabs = ({ setContent }) => {
+const UserTabs = ({ setContent, dataOnline }) => {
   const [data, setData] = useState([]);
   useEffect(() => {
     const getData = async () => {
@@ -23,6 +23,9 @@ const UserTabs = ({ setContent }) => {
             id={item.user_id}
             nama={item.username}
             setContent={setContent}
+            dataOnline={dataOnline.filter(
+              (onlineItem) => onlineItem.userId == item.user_id
+            )}
           />
         ))}
       </div>

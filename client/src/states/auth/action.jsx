@@ -17,6 +17,7 @@ const asyncLoginAction = ({ username, password }) => {
     try {
       const response = await AuthAPI.login({ username, password });
       AuthAPI.setAccessToken(response.token);
+      localStorage.setItem("id", response.data.id);
       dispatch(setLoginAction(response.token));
       return response;
     } catch (error) {
