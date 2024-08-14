@@ -1,8 +1,10 @@
 import React from "react";
 import Input from "../components/common/Input";
 import Button from "../components/common/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { asyncLoginAction } from "../states/auth/action";
 
 const Login = () => {
   const {
@@ -10,8 +12,15 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => {
-    console.log(data);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const onSubmit = async (data) => {
+    const response = await dispatch(
+      asyncLoginAction({ username: data.username, password: data.password })
+    );
+    if (response.token) {
+      navigate("/");
+    }
   };
   return (
     <div className="flex justify-center items-center h-screen">

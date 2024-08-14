@@ -6,22 +6,55 @@ import { IoMdSend } from "react-icons/io";
 import ChatBox from "../components/common/ChatBox";
 import Banner from "../components/common/Banner";
 import { ChatAPI } from "../api/Chat";
+import { io } from "socket.io-client";
+
 const Chat = () => {
   const [tabs, setTabs] = useState("chat");
   const [content, setContent] = useState(null);
   const [chat, setChat] = useState([]);
-
+  const [message, setMessage] = useState("");
+  const [name, setName] = useState("");
   const ActiveTabs = (param) => {
     setTabs(param);
   };
   const getData = async (content) => {
     setContent(content);
     const response = await ChatAPI.getChat(content);
-    setChat(response.data);
-    console.log(response);
-    console.log(chat);
+    setChat(response.data.result);
+    setName(response.data.userResult.username);
   };
-  console.log(chat);
+  const socket = io("http://localhost:3000");
+  useEffect(() => {
+    if (content) {
+      socket.on("connect", () => {
+        console.log("Socket connected");
+      });
+
+      socket.on("message", (newMessage) => {
+        setChat((prevChat) => [...prevChat, newMessage]);
+      });
+
+      socket.on("disconnect", () => {
+        console.log("Socket disconnected");
+      });
+
+      return () => {
+        socket.off("message");
+        socket.disconnect();
+      };
+    }
+  }, [content]);
+
+  const sendMessage = () => {
+    if (message.trim()) {
+      const socket = io("http://localhost:3000");
+      socket.emit("sendMessage", {
+        content: message,
+        chat_id: content,
+      });
+      setMessage("");
+    }
+  };
   return (
     <div className="h-screen flex">
       <div className="w-96 h-screen border-2 p-5 relative">
@@ -63,7 +96,7 @@ const Chat = () => {
         ) : (
           <div className="h-screen">
             <div className="w-auto h-10 border-2 p-2">
-              <span>Nama</span>
+              <span>{name}</span>
             </div>
             <div className="relative h-3/4 overflow-auto">
               {chat?.map((item) => (

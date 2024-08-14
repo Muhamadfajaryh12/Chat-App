@@ -43,7 +43,6 @@ class ChatService {
   }
 
   async getDetailChat(id_user_1, id_user_2) {
-    console.log(id_user_1, id_user_2);
     const query = `
     SELECT 
         chat.id as chat_id,
@@ -68,7 +67,13 @@ class ChatService {
       id_user_1,
       id_user_2,
     ]);
-    return result;
+    const userQuery = `SELECT * FROM users WHERE id = ?`;
+    const [userResult] = await pool.query(userQuery, [id_user_2]);
+
+    return {
+      result,
+      userResult: userResult[0], // Mengambil objek pertama dari hasil query
+    };
   }
 }
 module.exports = ChatService;
