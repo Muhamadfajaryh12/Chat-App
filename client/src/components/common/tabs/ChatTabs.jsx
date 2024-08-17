@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import UserBox from "../UserBox";
 import { ChatAPI } from "../../../api/Chat";
+import { useAuth } from "../../../hooks/useAuth";
 UserBox;
-const ChatTabs = ({ setContent, dataOnline }) => {
+const ChatTabs = ({ setContent, dataOnline, id }) => {
   const [data, setData] = useState([]);
-  console.log(dataOnline);
+  console.log(id);
   useEffect(() => {
     const getData = async () => {
-      const response = await ChatAPI.getListChat();
+      const response = await ChatAPI.getListChat(localStorage.getItem("id"));
       setData(response);
     };
     getData();

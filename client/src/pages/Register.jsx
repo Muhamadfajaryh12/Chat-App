@@ -2,14 +2,26 @@ import React from "react";
 import Input from "../components/common/Input";
 import Button from "../components/common/Button";
 import { useForm } from "react-hook-form";
+import AuthAPI from "../api/Auth";
+import { useNavigate } from "react-router-dom";
 const Register = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => {
-    console.log(data);
+  const navigate = useNavigate();
+  const onSubmit = async (data) => {
+    try {
+      await AuthAPI.register({
+        username: data.username,
+        password: data.password,
+      });
+
+      navigate("/login");
+    } catch (error) {
+      console.error("Registration failed:", error);
+    }
   };
   return (
     <div className="flex justify-center h-screen items-center">

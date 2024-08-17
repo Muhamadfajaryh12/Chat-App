@@ -2,21 +2,17 @@ import axios from "axios";
 
 const ChatAPI = (() => {
   const BASE_URL = `http://localhost:3001/api/chat`;
-  const getListChat = async () => {
+  const getListChat = async (id) => {
     try {
-      const response = await axios.get(
-        `${BASE_URL}/${localStorage.getItem("id")}`
-      );
+      const response = await axios.get(`${BASE_URL}/${id}`);
       return response.data;
     } catch (error) {
       console.log(error);
     }
   };
-  const getChat = async (id) => {
+  const getChat = async (id_1, id) => {
     try {
-      const response = await axios.get(
-        `${BASE_URL}/${localStorage.getItem("id")}/${id}`
-      );
+      const response = await axios.get(`${BASE_URL}/${id_1}/${id}`);
       console.log(id);
       return response.data;
     } catch (error) {

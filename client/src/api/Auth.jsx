@@ -5,9 +5,6 @@ const AuthAPI = (() => {
   const setAccessToken = (token) => {
     localStorage.setItem("access_token", token);
   };
-  const getAccessToken = () => {
-    return localStorage.getItem("access_token");
-  };
 
   const register = async ({ username, password }) => {
     try {
@@ -33,10 +30,20 @@ const AuthAPI = (() => {
       console.log(error);
     }
   };
+  const profile = async (id) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/${id}`);
+      return response.data.data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return {
     register,
     login,
     setAccessToken,
+    profile,
   };
 })();
 

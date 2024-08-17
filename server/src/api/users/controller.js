@@ -41,7 +41,23 @@ const login = async (req, res) => {
   }
 };
 
+const profile = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const data = await userService.profile(id);
+    res.status(200).json({
+      data,
+    });
+  } catch (error) {
+    if (error instanceof InvariantError) {
+      return res.status(400).json({ message: error.message });
+    }
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   register,
   login,
+  profile,
 };

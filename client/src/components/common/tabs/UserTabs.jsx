@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import UserBox from "../UserBox";
 import ModalContact from "../ModalContact";
 import { ContactAPI } from "../../../api/Contact";
+import { useAuth } from "../../../hooks/useAuth";
 
 const UserTabs = ({ setContent, dataOnline }) => {
   const [data, setData] = useState([]);
+  const auth = useAuth();
   useEffect(() => {
     const getData = async () => {
-      const response = await ContactAPI.getContact();
+      const response = await ContactAPI.getContact(auth.user?.id);
       setData(response);
     };
     getData();

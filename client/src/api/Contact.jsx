@@ -2,9 +2,9 @@ import axios from "axios";
 
 const ContactAPI = (() => {
   const BASE_URL = `http://localhost:3001/api/contact`;
-  const getContact = async () => {
+  const getContact = async (id) => {
     try {
-      const response = await axios.get(`${BASE_URL}/7`);
+      const response = await axios.get(`${BASE_URL}/${id}`);
       return response.data;
     } catch (error) {
       console.log(error);

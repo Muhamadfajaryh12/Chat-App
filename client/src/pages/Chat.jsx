@@ -8,6 +8,7 @@ import Banner from "../components/common/Banner";
 import { ChatAPI } from "../api/Chat";
 import { io } from "socket.io-client";
 import { useForm } from "react-hook-form";
+import { useAuth } from "../hooks/useAuth";
 
 const Chat = () => {
   const [tabs, setTabs] = useState("chat");
@@ -16,13 +17,23 @@ const Chat = () => {
   const [name, setName] = useState("");
   const [socket, setSocket] = useState(null);
   const [online, setOnline] = useState([]);
+  const [user, setUser] = useState(null);
   const { register, handleSubmit } = useForm();
+  const auth = useAuth();
+
+  useEffect(() => {
+    if (auth.user?.id) {
+      setUser(auth.user.id);
+    }
+  }, [auth.user]);
+  console.log(user);
   const ActiveTabs = (param) => {
     setTabs(param);
   };
   const getData = async (content) => {
     setContent(content);
-    const response = await ChatAPI.getChat(content);
+
+    const response = await ChatAPI.getChat(user, content);
     setChat(response.data.result);
     setName(response.data.userResult.username);
   };
@@ -30,9 +41,10 @@ const Chat = () => {
   useEffect(() => {
     const socketClient = io("http://localhost:3000");
     setSocket(socketClient);
+    console.log(user);
 
     socketClient.on("connect", () => {
-      socketClient.emit("onlineUser", localStorage.getItem("id"));
+      socketClient.emit("onlineUser", user);
     });
 
     socketClient.on("getOnlineUsers", (res) => {
@@ -40,9 +52,7 @@ const Chat = () => {
     });
 
     socketClient.on("getMessage", (newMessage) => {
-      console.log("New message received:", newMessage); // Add this line for debugging
       setChat((prevChat) => [...prevChat, newMessage]);
-      console.log(chat);
     });
     return () => {
       socketClient.off("getOnlineUsers");
@@ -100,13 +110,16 @@ const Chat = () => {
         </div>
         <div className="">
           {tabs == "chat" ? (
-            <ChatTabs setContent={getData} dataOnline={online} />
+            <ChatTabs setContent={getData} dataOnline={online} id={user} />
           ) : (
             <UserTabs setContent={getData} dataOnline={online} />
           )}
         </div>
 
-        <button className="bg-blue-400 p-2 text-white rounded-md absolute bottom-4 ">
+        <button
+          className="bg-blue-400 p-2 text-white rounded-md absolute bottom-4 "
+          onClick={() => auth.logoutAction()}
+        >
           Logout
         </button>
       </div>

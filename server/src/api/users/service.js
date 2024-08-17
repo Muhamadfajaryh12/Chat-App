@@ -28,12 +28,25 @@ class UserService {
         throw new InvariantError("Wrong Password");
       }
 
-      return {
-        id: user.id,
-      };
+      return user;
     } catch (error) {
       console.error(error);
       throw new InvariantError("An error occurred during login.");
+    }
+  }
+
+  async profile(id) {
+    try {
+      const query = "SELECT * FROM users WHERE id = ?";
+      const [result] = await pool.query(query, [id]);
+      if (result.affectedRows == 0) {
+        throw new InvariantError("User not found");
+      }
+      const user = result[0];
+
+      return user;
+    } catch (error) {
+      throw new InvariantError("an error ");
     }
   }
 }
